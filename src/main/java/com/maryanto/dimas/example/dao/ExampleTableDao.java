@@ -2,17 +2,14 @@ package com.maryanto.dimas.example.dao;
 
 import com.maryanto.dimas.example.entity.ExampleTable;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class ExampleTableDao implements CrudRepository<ExampleTable, String> {
 
-    private Connection connection;
+    private final Connection connection;
 
     public ExampleTableDao(Connection connection) {
         this.connection = connection;
@@ -44,9 +41,10 @@ public class ExampleTableDao implements CrudRepository<ExampleTable, String> {
                 "       currency     as currency,\n" +
                 "       description  as description,\n" +
                 "       floating     as floating\n" +
-                "from example_table where id = '" + id + "'";
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery(query);
+                "from example_table where id = ?";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, id);
+        ResultSet resultSet = statement.executeQuery();
         ExampleTable data;
         if (resultSet.next()) {
             data = new ExampleTable(
@@ -60,9 +58,14 @@ public class ExampleTableDao implements CrudRepository<ExampleTable, String> {
                     resultSet.getString("description"),
                     resultSet.getDouble("floating")
             );
+            statement.close();
+            resultSet.close();
             return Optional.of(data);
-        } else
+        } else {
+            statement.close();
+            resultSet.close();
             return Optional.empty();
+        }
     }
 
     @Override

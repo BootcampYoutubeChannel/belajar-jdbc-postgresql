@@ -46,6 +46,16 @@ public class TestExampleTableDao extends TestCase {
         Optional<ExampleTable> optional = dao.findById("00'1");
         log.info("{}", optional.isPresent());
 
+        Assert.assertFalse("Data Tidak ditemukan", optional.isPresent());
+
+        optional = dao.findById("001");
+
+        log.info("{}", optional.isPresent());
+        Assert.assertTrue("Data dengan id 001 ditemukan", optional.isPresent());
+
+        ExampleTable data = optional.orElse(new ExampleTable());
+        Assert.assertEquals("Nama dengan id 001 adalah ", "Dimas Maryanto", data.getName());
+
         connection.close();
     }
 }
