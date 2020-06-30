@@ -32,6 +32,7 @@ public class ExampleTableDao implements CrudRepository<ExampleTable, String> {
 
     @Override
     public Optional<ExampleTable> findById(String id) throws SQLException {
+        //language=PostgreSQL
         String query = "select id           as id,\n" +
                 "       name         as name,\n" +
                 "       created_date as createdDate,\n" +
@@ -71,6 +72,7 @@ public class ExampleTableDao implements CrudRepository<ExampleTable, String> {
     @Override
     public List<ExampleTable> findAll() throws SQLException {
         List<ExampleTable> list = new ArrayList<>();
+        //language=PostgreSQL
         String query = "select id           as id,\n" +
                 "       name         as name,\n" +
                 "       created_date as createdDate,\n" +
