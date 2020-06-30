@@ -34,8 +34,35 @@ public class ExampleTableDao implements CrudRepository<ExampleTable, String> {
     }
 
     @Override
-    public Optional<ExampleTable> findById(String value) throws SQLException {
-        return Optional.empty();
+    public Optional<ExampleTable> findById(String id) throws SQLException {
+        String query = "select id           as id,\n" +
+                "       name         as name,\n" +
+                "       created_date as createdDate,\n" +
+                "       created_time as createdTime,\n" +
+                "       is_active    as active,\n" +
+                "       counter      as counter,\n" +
+                "       currency     as currency,\n" +
+                "       description  as description,\n" +
+                "       floating     as floating\n" +
+                "from example_table where id = '" + id + "'";
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(query);
+        ExampleTable data;
+        if (resultSet.next()) {
+            data = new ExampleTable(
+                    resultSet.getString("id"),
+                    resultSet.getString("name"),
+                    resultSet.getDate("createdDate"),
+                    resultSet.getTimestamp("createdTime"),
+                    resultSet.getObject("active", Boolean.class),
+                    resultSet.getInt("counter"),
+                    resultSet.getBigDecimal("currency"),
+                    resultSet.getString("description"),
+                    resultSet.getDouble("floating")
+            );
+            return Optional.of(data);
+        } else
+            return Optional.empty();
     }
 
     @Override

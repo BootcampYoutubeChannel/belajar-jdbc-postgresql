@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 public class TestExampleTableDao extends TestCase {
@@ -32,6 +33,18 @@ public class TestExampleTableDao extends TestCase {
         List<ExampleTable> listData = dao.findAll();
         log.info("{}", listData);
         Assert.assertEquals("Jumlah list data", listData.size(), 6);
+
+        connection.close();
+    }
+
+    @Test
+    public void testFindById() throws SQLException {
+        DataSource dataSource = this.config.getDataSource();
+        Connection connection = dataSource.getConnection();
+        log.info("status connected");
+        ExampleTableDao dao = new ExampleTableDao(connection);
+        Optional<ExampleTable> optional = dao.findById("00'1");
+        log.info("{}", optional.isPresent());
 
         connection.close();
     }
