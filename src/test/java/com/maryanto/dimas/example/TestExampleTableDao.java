@@ -58,4 +58,24 @@ public class TestExampleTableDao extends TestCase {
 
         connection.close();
     }
+
+    @Test
+    public void testPagination() throws SQLException {
+        DataSource dataSource = this.config.getDataSource();
+        Connection connection = dataSource.getConnection();
+        log.info("status connected");
+        ExampleTableDao dao = new ExampleTableDao(connection);
+
+        ExampleTable params = new ExampleTable();
+        params.setName("dimas");
+        params.setActive(true);
+        List<ExampleTable> list = dao.findAll(0L, 2L, 0L, "desc", params);
+
+        Assert.assertEquals("Jumlah data list paginationn", 2, list.size());
+
+        list = dao.findAll(2L, 4L, 0L, "desc", params);
+        Assert.assertEquals("Jumlah data list pagination ke 2", 4, list.size());
+
+        connection.close();
+    }
 }
