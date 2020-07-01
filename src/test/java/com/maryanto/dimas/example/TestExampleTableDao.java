@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,6 +61,35 @@ public class TestExampleTableDao extends TestCase {
 
         ExampleTable data = optional.orElse(new ExampleTable());
         Assert.assertEquals("Nama dengan id 001 adalah ", "Dimas Maryanto", data.getName());
+
+        connection.close();
+    }
+
+    @Test
+    public void testFindByIds() throws SQLException {
+        DataSource dataSource = this.config.getDataSource();
+        Connection connection = dataSource.getConnection();
+        log.info("status connected");
+        ExampleTableDao dao = new ExampleTableDao(connection);
+
+        List<ExampleTable> list = dao.findByIds("001", "002", "003");
+        Assert.assertEquals("Jumlah data by ids", 3, list.size());
+        log.info("jumlah data find by ids : {}", list);
+
+        connection.close();
+    }
+
+    @Test
+    public void testFindByListId() throws SQLException {
+        DataSource dataSource = this.config.getDataSource();
+        Connection connection = dataSource.getConnection();
+        log.info("status connected");
+        ExampleTableDao dao = new ExampleTableDao(connection);
+
+        List<String> strings = Arrays.asList("001", "002", "004");
+        List<ExampleTable> list = dao.findByIds(strings);
+        Assert.assertEquals("Jumlah data by list id", 3, list.size());
+        log.info("jumlah data find by list id : {}", list);
 
         connection.close();
     }
