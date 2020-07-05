@@ -14,3 +14,13 @@ Pembahasan materi tentang JDBC:
 10. Array as Parameter using class PreparedStatement 
 11. Transactional using JDBC
 12. Batch Processing
+
+## Start migrate
+
+```bash
+mvn clean \
+-Dflyway.user=bootcamp \
+-Dflyway.password=admin \
+-Dflyway.url=jdbc:postgresql://localhost:5432/bootcamp \
+flyway:migrate
+```
