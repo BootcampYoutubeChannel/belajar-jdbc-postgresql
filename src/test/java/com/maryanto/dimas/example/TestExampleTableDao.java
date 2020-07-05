@@ -163,4 +163,62 @@ public class TestExampleTableDao extends TestCase {
         dao.update(example);
         connection.close();
     }
+
+    @Test
+    public void testTransactionCommitRollback() {
+        DataSource dataSource = this.config.getDataSource();
+        Connection connection = null;
+        ExampleTable muhamadPurwadi = new ExampleTable(
+                null,
+                "Muhamad Purwadi",
+                Date.valueOf(LocalDate.now()),
+                Timestamp.valueOf(LocalDateTime.now()),
+                true,
+                0,
+                new BigDecimal(100000),
+                "test data",
+                0D);
+        try {
+            connection = dataSource.getConnection();
+            connection.setAutoCommit(false);
+            log.info("status connected");
+            ExampleTableDao dao = new ExampleTableDao(connection);
+
+            ExampleTable save1 = dao.save(muhamadPurwadi);
+            assertNotNull("employee id not null", save1.getId());
+            log.info("employee: {}", save1);
+
+            muhamadPurwadi.setCurrency(new BigDecimal(10));
+            dao.update(muhamadPurwadi);
+
+            connection.commit();
+            connection.close();
+        } catch (SQLException sqle) {
+            log.error("sql exception", sqle);
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                    log.warn("was rollback");
+                    connection.close();
+                } catch (SQLException sqlRollbackException) {
+                    log.error("failed rollback", sqlRollbackException);
+                }
+            }
+        }
+
+        Connection checkConnection = null;
+        try {
+            checkConnection = dataSource.getConnection();
+            ExampleTableDao dao = new ExampleTableDao(checkConnection);
+            Optional<ExampleTable> newDataExist = dao.findById(muhamadPurwadi.getId());
+            Assert.assertTrue("Data Baru tersimpan", newDataExist.isPresent());
+            if (newDataExist.isPresent()) {
+                ExampleTable data = newDataExist.get();
+                dao.removeById(data.getId());
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+    }
 }
