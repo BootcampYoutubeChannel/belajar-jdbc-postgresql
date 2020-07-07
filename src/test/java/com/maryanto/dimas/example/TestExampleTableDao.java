@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -219,6 +220,67 @@ public class TestExampleTableDao extends TestCase {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+    }
 
+    @Test
+    public void testBulkUpload() {
+        DataSource dataSource = this.config.getDataSource();
+        Connection connection = null;
+        List<ExampleTable> list = new ArrayList<>();
+        List<String> newId = new ArrayList<>();
+        try {
+            connection = dataSource.getConnection();
+            connection.setAutoCommit(false);
+
+            list.add(new ExampleTable(
+                    null,
+                    "Hari Sapto Adi",
+                    Date.valueOf(LocalDate.now()),
+                    Timestamp.valueOf(LocalDateTime.now()),
+                    true,
+                    0,
+                    new BigDecimal(100000),
+                    "",
+                    0D));
+            list.add(new ExampleTable(
+                    null,
+                    "Deni Sutisna",
+                    Date.valueOf(LocalDate.now()),
+                    Timestamp.valueOf(LocalDateTime.now()),
+                    true,
+                    0,
+                    new BigDecimal(100000),
+                    "",
+                    0D));
+            ExampleTableDao dao = new ExampleTableDao(connection);
+            newId = dao.save(list);
+
+
+            connection.commit();
+        } catch (SQLException sqle) {
+            log.error("sql exception", sqle);
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                    log.warn("was rollback");
+                    connection.close();
+                } catch (SQLException sqlRollbackException) {
+                    log.error("failed rollback", sqlRollbackException);
+                }
+            }
+        }
+
+
+        Connection checkConnection = null;
+        try {
+            checkConnection = dataSource.getConnection();
+            ExampleTableDao dao = new ExampleTableDao(checkConnection);
+            List<ExampleTable> newList = dao.findByIds(newId);
+
+            Assert.assertEquals("Data Baru tersimpan jumlahnya", 2, newList.size());
+            dao.removeByListId(newId);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
 }
