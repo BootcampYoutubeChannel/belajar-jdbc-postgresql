@@ -1,11 +1,9 @@
-create schema perpustakaan;
-
 create table perpustakaan.buku
 (
     id          character varying(64) not null primary key default uuid_generate_v4(),
     nama        character varying(50) not null,
     isbn        character varying(64),
-    penerbit_id character varying(64) not null
+    penerbit_id character varying(64)
 );
 
 create table perpustakaan.penerbit
@@ -17,7 +15,7 @@ create table perpustakaan.penerbit
 
 alter table perpustakaan.buku
     add constraint fk_penerbit_id foreign key (penerbit_id)
-        references perpustakaan.penerbit (id) on update cascade on delete cascade;
+        references perpustakaan.penerbit (id) on update cascade on delete SET NULL;
 
 create table perpustakaan.anggota
 (

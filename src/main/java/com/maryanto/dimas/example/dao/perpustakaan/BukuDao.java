@@ -19,17 +19,51 @@ public class BukuDao implements CrudRepository<Buku, String> {
 
     @Override
     public Buku save(Buku value) throws SQLException {
-        return null;
+        //language=PostgreSQL
+        String query = "insert into perpustakaan.buku(nama, isbn, penerbit_id) values (?, ?, ?)";
+        PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+        statement.setString(1, value.getNama());
+        statement.setString(2, value.getIsbn());
+        if (value.getPenerbit() != null) {
+            statement.setNull(3, Types.VARCHAR);
+        } else {
+            statement.setString(3, value.getPenerbit().getId());
+        }
+        int row = statement.executeUpdate();
+        ResultSet generatedKeys = statement.getGeneratedKeys();
+        if (generatedKeys.next())
+            value.setId(generatedKeys.getString("id"));
+        statement.close();
+        return value;
     }
 
     @Override
     public Buku update(Buku value) throws SQLException {
-        return null;
+        //language=PostgreSQL
+        String query = "update perpustakaan.buku set nama = ?, isbn = ?, penerbit_id =? where id = ?";
+        PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+        statement.setString(1, value.getNama());
+        statement.setString(2, value.getIsbn());
+        if (value.getPenerbit() != null) {
+            statement.setNull(3, Types.VARCHAR);
+        } else {
+            statement.setString(3, value.getPenerbit().getId());
+        }
+        statement.setString(4, value.getId());
+        int row = statement.executeUpdate();
+        statement.close();
+        return value;
     }
 
     @Override
     public Boolean removeById(String value) throws SQLException {
-        return null;
+        //language=PostgreSQL
+        String query = "delete from perpustakaan.buku where id = ?";
+        PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+        statement.setString(1, value);
+        int row = statement.executeUpdate();
+        statement.close();
+        return row >= 1;
     }
 
     @Override

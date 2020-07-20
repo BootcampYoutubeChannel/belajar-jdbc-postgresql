@@ -18,17 +18,41 @@ public class PenerbitDao implements CrudRepository<Penerbit, String> {
 
     @Override
     public Penerbit save(Penerbit value) throws SQLException {
-        return null;
+        //language=PostgreSQL
+        String query = "insert into perpustakaan.penerbit(nama, alamat) values (?, ?)";
+        PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+        statement.setString(1, value.getNama());
+        statement.setString(2, value.getAlamat());
+        int row = statement.executeUpdate();
+        ResultSet generatedKeys = statement.getGeneratedKeys();
+        if (generatedKeys.next())
+            value.setId(generatedKeys.getString("id"));
+        statement.close();
+        return value;
     }
 
     @Override
     public Penerbit update(Penerbit value) throws SQLException {
-        return null;
+        //language=PostgreSQL
+        String query = "update perpustakaan.penerbit set nama = ?, alamat = ? where id = ?";
+        PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+        statement.setString(1, value.getNama());
+        statement.setString(2, value.getAlamat());
+        statement.setString(3, value.getId());
+        int row = statement.executeUpdate();
+        statement.close();
+        return value;
     }
 
     @Override
     public Boolean removeById(String value) throws SQLException {
-        return null;
+        //language=PostgreSQL
+        String query = "delete from perpustakaan.penerbit where id = ?";
+        PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+        statement.setString(1, value);
+        int row = statement.executeUpdate();
+        statement.close();
+        return row >= 1;
     }
 
     @Override
