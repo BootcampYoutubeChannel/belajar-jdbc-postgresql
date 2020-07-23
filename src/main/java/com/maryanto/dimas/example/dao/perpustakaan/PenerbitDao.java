@@ -1,6 +1,7 @@
 package com.maryanto.dimas.example.dao.perpustakaan;
 
 import com.maryanto.dimas.example.dao.CrudRepository;
+import com.maryanto.dimas.example.entity.perpustakaan.Buku;
 import com.maryanto.dimas.example.entity.perpustakaan.Penerbit;
 
 import java.sql.*;
@@ -57,29 +58,65 @@ public class PenerbitDao implements CrudRepository<Penerbit, String> {
 
     @Override
     public Optional<Penerbit> findById(String value) throws SQLException {
-        String query = "select id     as id,\n" +
-                "       nama   as nama,\n" +
-                "       alamat as alamat\n" +
-                "from perpustakaan.penerbit\n" +
-                "where id = ?";
+        //language=PostgreSQL
+        String query = "select p.id     as id,\n" +
+                "       p.nama   as nama,\n" +
+                "       p.alamat as alamat,\n" +
+                "       b.id     as buku_id,\n" +
+                "       b.nama   as buku_nama,\n" +
+                "       b.isbn   as buku_isbn\n" +
+                "from perpustakaan.penerbit p\n" +
+                "         join perpustakaan.buku b on p.id = b.penerbit_id\n" +
+                "where p.id = ?";
         PreparedStatement statement = connection.prepareStatement(query);
         statement.setString(1, value);
         ResultSet resultSet = statement.executeQuery();
-        if (!resultSet.next()) {
-            statement.close();
-            resultSet.close();
-            return Optional.empty();
+        Penerbit penerbit = new Penerbit();
+        List<Buku> listBuku = new ArrayList<>();
+
+        while (resultSet.next()) {
+            Buku buku = new Buku();
+            penerbit.setId(resultSet.getString("id"));
+            penerbit.setNama(resultSet.getString("nama"));
+            penerbit.setAlamat(resultSet.getString("alamat"));
+            buku.setId(resultSet.getString("buku_id"));
+            buku.setNama(resultSet.getString("buku_nama"));
+            buku.setIsbn(resultSet.getString("buku_isbn"));
+            listBuku.add(buku);
         }
 
-        Penerbit data = new Penerbit(
-                resultSet.getString("id"),
-                resultSet.getString("nama"),
-                resultSet.getString("alamat"),
-                new ArrayList<>()
-        );
+        penerbit.setListBuku(listBuku);
         statement.close();
         resultSet.close();
-        return Optional.of(data);
+
+        return penerbit.getId() != null ? Optional.of(penerbit) : Optional.empty();
+    }
+
+    public List<Buku> findByPenerbitId(String value) throws SQLException {
+        //language=PostgreSQL
+        String query = "select b.id     as buku_id,\n" +
+                "       b.nama   as buku_nama,\n" +
+                "       b.isbn   as buku_isbn\n" +
+                "from perpustakaan.penerbit p\n" +
+                "         join perpustakaan.buku b on p.id = b.penerbit_id\n" +
+                "where p.id = ?";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, value);
+        ResultSet resultSet = statement.executeQuery();
+        Penerbit penerbit = new Penerbit();
+        List<Buku> listBuku = new ArrayList<>();
+
+        while (resultSet.next()) {
+            Buku buku = new Buku();
+            buku.setId(resultSet.getString("buku_id"));
+            buku.setNama(resultSet.getString("buku_nama"));
+            buku.setIsbn(resultSet.getString("buku_isbn"));
+            listBuku.add(buku);
+        }
+
+        statement.close();
+        resultSet.close();
+        return listBuku;
     }
 
     @Override
@@ -97,7 +134,7 @@ public class PenerbitDao implements CrudRepository<Penerbit, String> {
                     resultSet.getString("id"),
                     resultSet.getString("nama"),
                     resultSet.getString("alamat"),
-                    new ArrayList<>()
+                    this.findByPenerbitId(resultSet.getString("id"))
             );
             list.add(data);
         }

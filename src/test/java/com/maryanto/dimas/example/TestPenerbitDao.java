@@ -32,6 +32,11 @@ public class TestPenerbitDao extends TestCase {
         PenerbitDao dao = new PenerbitDao(connection);
         List<Penerbit> list = dao.findAll();
 
+
+        list.forEach(data -> {
+            log.info("penerbit id: {} => {}", data.getId(), data.getListBuku());
+        });
+
         assertEquals("jumlah data di database", 2, list.size());
         connection.close();
     }
@@ -46,7 +51,12 @@ public class TestPenerbitDao extends TestCase {
 
         assertTrue("id 001 data ditemukan", id001Optional.isPresent());
         Penerbit penerbit = id001Optional.get();
+
+        log.info("penerbit 001: {}, list: {}", penerbit, penerbit.getListBuku());
+
         assertEquals("id 001 namanya adalah ", "Informatika", penerbit.getNama());
+
+        assertEquals("jumlah buku di penerbit 001", penerbit.getListBuku().size(), 2);
 
         Optional<Penerbit> randomId = dao.findById(UUID.randomUUID().toString());
         assertFalse("id ramdom tidak ditemukan", randomId.isPresent());
