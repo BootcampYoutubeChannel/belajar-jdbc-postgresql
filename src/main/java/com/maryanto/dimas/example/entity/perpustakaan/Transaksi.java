@@ -18,5 +18,5 @@ public class Transaksi {
     private String id;
     private Date createdDate;
     private Anggota anggota;
-    private List<TransactionDetail> details = new ArrayList<>();
+    private List<TransaksiDetail> details = new ArrayList<>();
 }

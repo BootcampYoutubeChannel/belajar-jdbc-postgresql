@@ -9,10 +9,13 @@ import java.sql.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TransactionDetail {
+public class TransaksiDetail {
 
     private String id;
     private Transaksi transaksi;
     private Buku buku;
     private Date tanggalKembali;
+    private Boolean statusKembali;
+    private Date lastUpdatedDate;
+
 }

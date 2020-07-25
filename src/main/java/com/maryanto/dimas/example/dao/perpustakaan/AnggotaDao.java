@@ -4,6 +4,8 @@ import com.maryanto.dimas.example.dao.CrudRepository;
 import com.maryanto.dimas.example.entity.perpustakaan.Anggota;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +35,32 @@ public class AnggotaDao implements CrudRepository<Anggota, String> {
 
     @Override
     public Optional<Anggota> findById(String value) throws SQLException {
-        return Optional.empty();
+        //language=PostgreSQL
+        String query = "select id        as id,\n" +
+                "       " +
+                "nomor_ktp as ktp,\n" +
+                "       nama      as nama,\n" +
+                "       alamat    as alamat\n" +
+                "from perpustakaan.anggota\n" +
+                "where id = ?";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, value);
+        ResultSet resultSet = statement.executeQuery();
+        if (!resultSet.next()) {
+            statement.close();
+            resultSet.close();
+            return Optional.empty();
+        }
+
+        Anggota anggota = new Anggota(
+                resultSet.getString("id"),
+                resultSet.getString("ktp"),
+                resultSet.getString("nama"),
+                resultSet.getString("alamat")
+        );
+        statement.close();
+        resultSet.close();
+        return Optional.of(anggota);
     }
 
     @Override
