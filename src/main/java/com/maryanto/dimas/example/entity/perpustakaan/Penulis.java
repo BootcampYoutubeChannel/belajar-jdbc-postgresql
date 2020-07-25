@@ -8,17 +8,14 @@ import lombok.ToString;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = {"listPenulis"})
-public class Buku {
+@ToString(exclude = {"listBuku"})
+public class Penulis {
 
     private String id;
     private String nama;
-    private String isbn;
-    private Penerbit penerbit;
-    private List<Penulis> listPenulis = new ArrayList<>();
-
+    private String alamat;
+    private List<Buku> listBuku = new ArrayList<>();
 }

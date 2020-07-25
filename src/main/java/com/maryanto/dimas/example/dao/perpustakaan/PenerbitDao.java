@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public class PenerbitDao implements CrudRepository<Penerbit, String> {
 
-    private Connection connection;
+    private final Connection connection;
 
     public PenerbitDao(Connection connection) {
         this.connection = connection;

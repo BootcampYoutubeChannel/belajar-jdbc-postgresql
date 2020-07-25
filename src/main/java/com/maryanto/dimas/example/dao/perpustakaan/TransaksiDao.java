@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public class TransaksiDao implements CrudRepository<Transaksi, String> {
 
-    private Connection connection;
+    private final Connection connection;
 
     public TransaksiDao(Connection connection) {
         this.connection = connection;
@@ -132,7 +132,8 @@ public class TransaksiDao implements CrudRepository<Transaksi, String> {
                                 resultSet.getString("penerbit_nama"),
                                 resultSet.getString("penerbit_alamat"),
                                 new ArrayList<>()
-                        )
+                        ),
+                        new ArrayList<>()
                 ),
                 resultSet.getDate("tanggal_kembali"),
                 resultSet.getBoolean("status_kembali"),
@@ -226,7 +227,8 @@ public class TransaksiDao implements CrudRepository<Transaksi, String> {
                                     resultSet.getString("penerbit_nama"),
                                     resultSet.getString("penerbit_alamat"),
                                     new ArrayList<>()
-                            )
+                            ),
+                            new ArrayList<>()
                     ),
                     resultSet.getDate("tanggal_kembali"),
                     resultSet.getBoolean("status_kembali"),

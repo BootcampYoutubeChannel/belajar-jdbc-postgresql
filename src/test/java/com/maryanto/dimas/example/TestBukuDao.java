@@ -49,6 +49,8 @@ public class TestBukuDao extends TestCase {
         assertEquals("id 001 namanya adalah ", "Pemograman Java", buku.getNama());
         assertEquals("id 001 nama penerbitnya adalah ", "Informatika", buku.getPenerbit().getNama());
 
+        assertEquals("jumlah penulis pada buku", buku.getListPenulis().size(), 2);
+        log.info("list penulis: {}", buku.getListPenulis());
 
         Optional<Buku> randomId = dao.findById(UUID.randomUUID().toString());
         assertFalse("id ramdom tidak ditemukan", randomId.isPresent());

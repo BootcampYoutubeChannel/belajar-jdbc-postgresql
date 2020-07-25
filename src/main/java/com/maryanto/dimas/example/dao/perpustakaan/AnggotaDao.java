@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public class AnggotaDao implements CrudRepository<Anggota, String> {
 
-    private Connection connection;
+    private final Connection connection;
 
     public AnggotaDao(Connection connection) {
         this.connection = connection;

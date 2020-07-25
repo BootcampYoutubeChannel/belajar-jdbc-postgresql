@@ -3,6 +3,7 @@ package com.maryanto.dimas.example.dao.perpustakaan;
 import com.maryanto.dimas.example.dao.CrudRepository;
 import com.maryanto.dimas.example.entity.perpustakaan.Buku;
 import com.maryanto.dimas.example.entity.perpustakaan.Penerbit;
+import com.maryanto.dimas.example.entity.perpustakaan.Penulis;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.Optional;
 
 public class BukuDao implements CrudRepository<Buku, String> {
 
-    private Connection connection;
+    private final Connection connection;
 
     public BukuDao(Connection connection) {
         this.connection = connection;
@@ -96,7 +97,8 @@ public class BukuDao implements CrudRepository<Buku, String> {
                         resultSet.getString("penerbitName"),
                         resultSet.getString("penerbitAlamat"),
                         new ArrayList<>()
-                )
+                ),
+                this.findPenulisByBukuId(resultSet.getString("bukuId"))
         );
         resultSet.close();
         statement.close();
@@ -128,10 +130,38 @@ public class BukuDao implements CrudRepository<Buku, String> {
                             resultSet.getString("penerbitName"),
                             resultSet.getString("penerbitAlamat"),
                             new ArrayList<>()
-                    )
+                    ),
+                    this.findPenulisByBukuId(resultSet.getString("bukuId"))
             );
             list.add(data);
         }
+        statement.close();
+        resultSet.close();
+        return list;
+    }
+
+    public List<Penulis> findPenulisByBukuId(String value) throws SQLException {
+        List<Penulis> list = new ArrayList<>();
+        //language=PostgreSQL
+        String query = "select pb.penulis_id as penulis_id,\n" +
+                "       p.nama        as penulis_nama,\n" +
+                "       p.alamat      as penulis_alamat\n" +
+                "from perpustakaan.penulis_buku pb\n" +
+                "         left join perpustakaan.penulis p on pb.penulis_id = p.id\n" +
+                "where pb.buku_id = ?";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, value);
+        ResultSet resultSet = statement.executeQuery();
+        while (resultSet.next()) {
+            Penulis penulis = new Penulis(
+                    resultSet.getString("penulis_id"),
+                    resultSet.getString("penulis_nama"),
+                    resultSet.getString("penulis_alamat"),
+                    new ArrayList<>()
+            );
+            list.add(penulis);
+        }
+
         statement.close();
         resultSet.close();
         return list;
