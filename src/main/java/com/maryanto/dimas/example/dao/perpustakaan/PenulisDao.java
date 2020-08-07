@@ -5,10 +5,7 @@ import com.maryanto.dimas.example.entity.perpustakaan.Buku;
 import com.maryanto.dimas.example.entity.perpustakaan.Penerbit;
 import com.maryanto.dimas.example.entity.perpustakaan.Penulis;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,17 +20,46 @@ public class PenulisDao implements CrudRepository<Penulis, String> {
 
     @Override
     public Penulis save(Penulis value) throws SQLException {
-        return null;
+        //language=PostgreSQL
+        String query = "insert into perpustakaan.penulis (nama, alamat)\n" +
+                "values (?, ?)";
+        PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+        statement.setString(1, value.getNama());
+        statement.setString(2, value.getAlamat());
+        int row = statement.executeUpdate();
+        ResultSet generatedKeys = statement.getGeneratedKeys();
+        if (generatedKeys.next())
+            value.setId(generatedKeys.getString("id"));
+        statement.close();
+        return value;
     }
 
     @Override
     public Penulis update(Penulis value) throws SQLException {
-        return null;
+        String query = "update perpustakaan.penulis\n" +
+                "set nama   = ?,\n" +
+                "    alamat = ?\n" +
+                "where id = ?";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, value.getNama());
+        statement.setString(2, value.getAlamat());
+        statement.setString(3, value.getId());
+        int row = statement.executeUpdate();
+        statement.close();
+        return value;
     }
 
     @Override
     public Boolean removeById(String value) throws SQLException {
-        return null;
+        //language=PostgreSQL
+        String query = "delete\n" +
+                "from perpustakaan.penulis\n" +
+                "where id = ?";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, value);
+        int row = statement.executeUpdate();
+        statement.close();
+        return row >= 1;
     }
 
     @Override

@@ -1,14 +1,9 @@
 package com.maryanto.dimas.example;
 
 import com.maryanto.dimas.example.config.DatasourceConfig;
-import com.maryanto.dimas.example.dao.perpustakaan.AnggotaDao;
-import com.maryanto.dimas.example.dao.perpustakaan.BukuDao;
-import com.maryanto.dimas.example.dao.perpustakaan.PenerbitDao;
-import com.maryanto.dimas.example.dao.perpustakaan.TransaksiDao;
-import com.maryanto.dimas.example.entity.perpustakaan.Anggota;
-import com.maryanto.dimas.example.entity.perpustakaan.Buku;
-import com.maryanto.dimas.example.entity.perpustakaan.Transaksi;
-import com.maryanto.dimas.example.entity.perpustakaan.TransaksiDetail;
+import com.maryanto.dimas.example.dao.perpustakaan.*;
+import com.maryanto.dimas.example.entity.perpustakaan.*;
+import com.maryanto.dimas.example.service.perpustakaan.PenulisBukuService;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
@@ -43,6 +38,38 @@ public class App {
         Optional<Buku> bukuOptional = bukuDao.findById("001");
         log.info("buku is present: {}", bukuOptional.isPresent());
 
+        connection.close();
+    }
+
+    public static void testSaveBukuDenganPenulis() throws SQLException {
+        DataSource dataSource = config.getDataSource();
+        Connection connection = dataSource.getConnection();
+        connection.setAutoCommit(false);
+
+        BukuDao bukuDao = new BukuDao(connection);
+        PenulisDao penulisDao = new PenulisDao(connection);
+        PenulisBukuDao penulisBukuDao = new PenulisBukuDao(connection);
+        PenulisBukuService service = new PenulisBukuService(bukuDao, penulisDao, penulisBukuDao);
+
+        Buku buku = service.saveByBuku(new Buku("001"), new Penulis("003"));
+        connection.commit();
+        connection.close();
+    }
+
+    public static void testSavePenulis() throws SQLException {
+        DataSource dataSource = config.getDataSource();
+        Connection connection = dataSource.getConnection();
+        connection.setAutoCommit(false);
+
+        BukuDao bukuDao = new BukuDao(connection);
+        PenulisDao penulisDao = new PenulisDao(connection);
+        PenulisBukuDao penulisBukuDao = new PenulisBukuDao(connection);
+        PenulisBukuService service = new PenulisBukuService(bukuDao, penulisDao, penulisBukuDao);
+
+        service.saveByPenulis(new Penulis("001"), new Buku("001"), new Buku("002"), new Buku("003"));
+        service.saveByPenulis(new Penulis("002"), new Buku("002"), new Buku("003"));
+
+        connection.commit();
         connection.close();
     }
 
@@ -130,9 +157,9 @@ public class App {
 
     public static void main(String[] args) {
         try {
-            testHapusTransaksi();
+            testSavePenulis();
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            log.error("sql error: ", throwables);
         }
     }
 }

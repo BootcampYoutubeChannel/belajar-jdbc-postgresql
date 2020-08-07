@@ -15,6 +15,10 @@ import java.util.List;
 @ToString(exclude = {"listPenulis"})
 public class Buku {
 
+    public Buku(String id) {
+        this.id = id;
+    }
+
     private String id;
     private String nama;
     private String isbn;

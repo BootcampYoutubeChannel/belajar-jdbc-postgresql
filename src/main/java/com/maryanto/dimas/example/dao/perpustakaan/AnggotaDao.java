@@ -37,8 +37,7 @@ public class AnggotaDao implements CrudRepository<Anggota, String> {
     public Optional<Anggota> findById(String value) throws SQLException {
         //language=PostgreSQL
         String query = "select id        as id,\n" +
-                "       " +
-                "nomor_ktp as ktp,\n" +
+                "       nomor_ktp as ktp,\n" +
                 "       nama      as nama,\n" +
                 "       alamat    as alamat\n" +
                 "from perpustakaan.anggota\n" +
