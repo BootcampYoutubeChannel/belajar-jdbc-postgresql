@@ -1,7 +1,10 @@
 package com.maryanto.dimas.example;
 
 import com.maryanto.dimas.example.config.DatasourceConfig;
+import com.maryanto.dimas.example.dao.bank.NasabahDao;
 import com.maryanto.dimas.example.dao.perpustakaan.*;
+import com.maryanto.dimas.example.entity.bank.BadanUsaha;
+import com.maryanto.dimas.example.entity.bank.Perorangan;
 import com.maryanto.dimas.example.entity.perpustakaan.*;
 import com.maryanto.dimas.example.service.perpustakaan.PenulisBukuService;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +13,9 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -155,9 +160,35 @@ public class App {
         log.info("removed : {}", removedId.isPresent());
     }
 
+    public static void testSimpanNasabah() throws SQLException {
+        DataSource dataSource = config.getDataSource();
+        Connection connection = dataSource.getConnection();
+        log.info("status connected");
+
+        Perorangan dimas = new Perorangan();
+        dimas.setNama("Dimas Maryanto");
+        dimas.setKtp("62341234324");
+        dimas.setCreatedBy("admin");
+        dimas.setCreatedDate(Timestamp.valueOf(LocalDateTime.now()));
+        NasabahDao dao = new NasabahDao(connection);
+
+        dimas = (Perorangan) dao.save(dimas);
+        log.info("data nasabah peorangan: {}", dimas);
+
+        BadanUsaha tabeldataInf = new BadanUsaha();
+        tabeldataInf.setNama("PT. Tabeldata Informatika");
+        tabeldataInf.setNpwp("12342343");
+        tabeldataInf.setSiup("0987655");
+        tabeldataInf.setCreatedBy("admin");
+        tabeldataInf.setCreatedDate(Timestamp.valueOf(LocalDateTime.now()));
+
+        tabeldataInf = (BadanUsaha) dao.save(tabeldataInf);
+        log.info("data nasabah badan usaha: {}", tabeldataInf);
+    }
+
     public static void main(String[] args) {
         try {
-            testSavePenulis();
+            testSimpanNasabah();
         } catch (SQLException throwables) {
             log.error("sql error: ", throwables);
         }

@@ -21,7 +21,7 @@ Pembahasan materi tentang JDBC:
 mvn clean \
 -Dflyway.user=bootcamp \
 -Dflyway.password=admin \
--Dflyway.schemas=public,perpustakaan \
+-Dflyway.schemas=public,perpustakaan,bank \
 -Dflyway.url=jdbc:postgresql://localhost:5432/bootcamp \
 flyway:migrate
 ```
