@@ -10,12 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class NasabahDao implements CrudRepository<Nasabah, String> {
+public class NasabahSingleTableDao implements CrudRepository<Nasabah, String> {
 
 
     private final Connection connection;
 
-    public NasabahDao(Connection connection) {
+    public NasabahSingleTableDao(Connection connection) {
         this.connection = connection;
     }
 

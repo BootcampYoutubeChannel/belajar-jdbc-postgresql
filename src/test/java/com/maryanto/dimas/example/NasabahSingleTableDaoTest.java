@@ -1,7 +1,7 @@
 package com.maryanto.dimas.example;
 
 import com.maryanto.dimas.example.config.DatasourceConfig;
-import com.maryanto.dimas.example.dao.bank.NasabahDao;
+import com.maryanto.dimas.example.dao.bank.NasabahSingleTableDao;
 import com.maryanto.dimas.example.entity.bank.BadanUsaha;
 import com.maryanto.dimas.example.entity.bank.Nasabah;
 import com.maryanto.dimas.example.entity.bank.Perorangan;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-public class NasabahDaoTest extends TestCase {
+public class NasabahSingleTableDaoTest extends TestCase {
 
     private DatasourceConfig config;
 
@@ -32,7 +32,7 @@ public class NasabahDaoTest extends TestCase {
         Connection connection = dataSource.getConnection();
         log.info("status connected");
 
-        NasabahDao dao = new NasabahDao(connection);
+        NasabahSingleTableDao dao = new NasabahSingleTableDao(connection);
         Optional<Nasabah> optional = dao.findById("001");
 
         assertTrue("Data nasabah 001 di temukan", optional.isPresent());
@@ -54,7 +54,7 @@ public class NasabahDaoTest extends TestCase {
         Connection connection = dataSource.getConnection();
         log.info("status connected");
 
-        NasabahDao dao = new NasabahDao(connection);
+        NasabahSingleTableDao dao = new NasabahSingleTableDao(connection);
         List<Nasabah> list = dao.findAll();
         long jumlahNasabahPerorangan = list.stream().filter(data -> data instanceof Perorangan).count();
         assertEquals("jumlah nasabah perorangan", 1, jumlahNasabahPerorangan);

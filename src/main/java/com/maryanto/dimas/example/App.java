@@ -1,7 +1,8 @@
 package com.maryanto.dimas.example;
 
 import com.maryanto.dimas.example.config.DatasourceConfig;
-import com.maryanto.dimas.example.dao.bank.NasabahDao;
+import com.maryanto.dimas.example.dao.bank.NasabahMultiTableDao;
+import com.maryanto.dimas.example.dao.bank.NasabahSingleTableDao;
 import com.maryanto.dimas.example.dao.perpustakaan.*;
 import com.maryanto.dimas.example.entity.bank.BadanUsaha;
 import com.maryanto.dimas.example.entity.bank.Perorangan;
@@ -160,7 +161,7 @@ public class App {
         log.info("removed : {}", removedId.isPresent());
     }
 
-    public static void testSimpanNasabah() throws SQLException {
+    public static void testSimpanNasabahSingleTable() throws SQLException {
         DataSource dataSource = config.getDataSource();
         Connection connection = dataSource.getConnection();
         log.info("status connected");
@@ -170,7 +171,33 @@ public class App {
         dimas.setKtp("62341234324");
         dimas.setCreatedBy("admin");
         dimas.setCreatedDate(Timestamp.valueOf(LocalDateTime.now()));
-        NasabahDao dao = new NasabahDao(connection);
+        NasabahSingleTableDao dao = new NasabahSingleTableDao(connection);
+
+        dimas = (Perorangan) dao.save(dimas);
+        log.info("data nasabah peorangan: {}", dimas);
+
+        BadanUsaha tabeldataInf = new BadanUsaha();
+        tabeldataInf.setNama("PT. Tabeldata Informatika");
+        tabeldataInf.setNpwp("12342343");
+        tabeldataInf.setSiup("0987655");
+        tabeldataInf.setCreatedBy("admin");
+        tabeldataInf.setCreatedDate(Timestamp.valueOf(LocalDateTime.now()));
+
+        tabeldataInf = (BadanUsaha) dao.save(tabeldataInf);
+        log.info("data nasabah badan usaha: {}", tabeldataInf);
+    }
+
+    public static void testSimpanNasabahMultipleTable() throws SQLException {
+        DataSource dataSource = config.getDataSource();
+        Connection connection = dataSource.getConnection();
+        log.info("status connected");
+
+        Perorangan dimas = new Perorangan();
+        dimas.setNama("Dimas Maryanto");
+        dimas.setKtp("62341234324");
+        dimas.setCreatedBy("admin");
+        dimas.setCreatedDate(Timestamp.valueOf(LocalDateTime.now()));
+        NasabahMultiTableDao dao = new NasabahMultiTableDao(connection);
 
         dimas = (Perorangan) dao.save(dimas);
         log.info("data nasabah peorangan: {}", dimas);
@@ -188,7 +215,7 @@ public class App {
 
     public static void main(String[] args) {
         try {
-            testSimpanNasabah();
+            testSimpanNasabahMultipleTable();
         } catch (SQLException throwables) {
             log.error("sql error: ", throwables);
         }
