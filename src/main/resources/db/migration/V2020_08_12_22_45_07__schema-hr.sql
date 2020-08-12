@@ -33,3 +33,6 @@ alter table hr.employees
 alter table hr.employees
     add constraint fk_employee_manager_id foreign key (manager_id)
         references hr.employees (id) on update cascade on delete set null;
+
+alter table hr.employees
+    add constraint ck_eq_manager_id check ( manager_id <> id )
