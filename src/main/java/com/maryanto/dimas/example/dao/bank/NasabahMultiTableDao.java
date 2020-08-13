@@ -90,39 +90,22 @@ public class NasabahMultiTableDao implements CrudRepository<Nasabah, String> {
 
     @Override
     public Optional<Nasabah> findById(String value) throws SQLException {
-        String query = "select cif               as nasabah_id,\n" +
-                "       nama              as nasabah_nama,\n" +
-                "       null              as badan_usaha_npwp,\n" +
-                "       null              as badan_usaha_siup,\n" +
-                "       ktp               as perorangan_ktp,\n" +
-                "       foto              as perorangan_foto,\n" +
-                "       1                 as nasabah_type,\n" +
-                "       created_date      as nasabah_created_" +
-                "date,\n" +
-                "       created_by        as nasabah_created_by,\n" +
-                "       last_updated_date as nasabah_last_updated_date,\n" +
-                "       last_updated_by   as nasabah_last_updated_by\n" +
-                "from bank.nasabah_perorangan\n" +
-                "where cif = ?\n" +
-                "union\n" +
-                "select cif               as nasabah_id,\n" +
-                "       nama              as nasabah_nama,\n" +
-                "       npwp              as badan_usaha_npwp,\n" +
-                "       siup              as badan_usaha_siup,\n" +
-                "       null              as perorangan_ktp,\n" +
-                "       null              as perorangan_foto,\n" +
-                "       2                 as nasabah_type,\n" +
-                "       created_date      as nasabah_created_date,\n" +
-                "       created_by        as nasabah_created_by,\n" +
-                "       last_updated_date as nasabah_last_updated_date,\n" +
-                "       last_updated_by   as nasabah_last_updated_by\n" +
-                "from bank.nasabah_badan_usaha\n" +
-                "where cif = ?\n" +
-                "limit 1";
+        //language=PostgreSQL
+        String query = "select nasabah_cif               as nasabah_id,\n" +
+                "       nasabah_nama              as nasabah_nama,\n" +
+                "       nasabah_npwp              as badan_usaha_npwp,\n" +
+                "       nasabah_siup              as badan_usaha_siup,\n" +
+                "       nasabah_ktp               as perorangan_ktp,\n" +
+                "       nasabah_foto              as perorangan_foto,\n" +
+                "       nasabah_type              as nasabah_type,\n" +
+                "       nasabah_created_date      as nasabah_created_date,\n" +
+                "       nasabah_created_by        as nasabah_created_by,\n" +
+                "       nasabah_last_updated_date as nasabah_last_updated_date,\n" +
+                "       nasabah_last_updated_by   as nasabah_last_updated_by\n" +
+                "from bank.findbyidnasabah(?)";
 
         PreparedStatement statement = connection.prepareStatement(query);
         statement.setString(1, value);
-        statement.setString(2, value);
         ResultSet resultSet = statement.executeQuery();
         if (!resultSet.next()) {
             statement.close();
