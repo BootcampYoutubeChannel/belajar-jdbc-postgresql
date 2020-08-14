@@ -5,6 +5,7 @@ import com.maryanto.dimas.example.entity.bank.BadanUsaha;
 import com.maryanto.dimas.example.entity.bank.Nasabah;
 import com.maryanto.dimas.example.entity.bank.Perorangan;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +59,15 @@ public class NasabahMultiTableDao implements CrudRepository<Nasabah, String> {
     @Override
     public Nasabah update(Nasabah value) throws SQLException {
         return null;
+    }
+
+    public Boolean transferSaldoNasabahPerorangToBadanUsaha(Perorangan perorangan, BadanUsaha badanUsaha, BigDecimal saldo) throws SQLException {
+        CallableStatement statement = connection.prepareCall("call bank.trf_perorangan_ke_badan_usaha(?, ?, ?)");
+        statement.setString(1, perorangan.getCif());
+        statement.setString(2, badanUsaha.getCif());
+        statement.setBigDecimal(3, saldo);
+        int row = statement.executeUpdate();
+        return row >= 1;
     }
 
     @Override

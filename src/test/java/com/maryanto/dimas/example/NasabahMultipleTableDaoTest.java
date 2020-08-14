@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -61,6 +62,21 @@ public class NasabahMultipleTableDaoTest extends TestCase {
 
         long jumlahNasabahBadanUsahah = list.stream().filter(data -> data instanceof BadanUsaha).count();
         assertEquals("jumlah nasabah badan usaha", 1, jumlahNasabahBadanUsahah);
+        connection.close();
+    }
+
+    @Test
+    public void testTransferSaldo() throws SQLException {
+        DataSource dataSource = this.config.getDataSource();
+        Connection connection = dataSource.getConnection();
+        log.info("status connected");
+
+        NasabahMultiTableDao dao = new NasabahMultiTableDao(connection);
+
+        dao.transferSaldoNasabahPerorangToBadanUsaha(
+                new Perorangan("001"),
+                new BadanUsaha("002"),
+                new BigDecimal("200000"));
         connection.close();
     }
 }

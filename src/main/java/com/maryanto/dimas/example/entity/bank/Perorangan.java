@@ -11,6 +11,10 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 public class Perorangan extends Nasabah {
 
+    public Perorangan(String cif) {
+        this.setCif(cif);
+    }
+
     private String ktp;
     private String foto;
 }

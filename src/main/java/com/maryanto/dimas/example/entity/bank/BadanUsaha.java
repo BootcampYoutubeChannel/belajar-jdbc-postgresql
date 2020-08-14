@@ -9,7 +9,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class BadanUsaha extends Nasabah{
+public class BadanUsaha extends Nasabah {
+
+    public BadanUsaha(String cif) {
+        setCif(cif);
+    }
 
     private String npwp;
     private String siup;
