@@ -3,6 +3,7 @@ package com.maryanto.dimas.example.dao.bank;
 import com.maryanto.dimas.example.dao.CrudRepository;
 import com.maryanto.dimas.example.entity.bank.BadanUsaha;
 import com.maryanto.dimas.example.entity.bank.Nasabah;
+import com.maryanto.dimas.example.entity.bank.NasabahImage;
 import com.maryanto.dimas.example.entity.bank.Perorangan;
 
 import java.math.BigDecimal;
@@ -54,6 +55,44 @@ public class NasabahMultiTableDao implements CrudRepository<Nasabah, String> {
             statement.close();
             return value;
         }
+    }
+
+    public NasabahImage save(NasabahImage value) throws SQLException {
+        String query = "insert into bank.nasabah_perorangan_image(filename, file, nasabah_id, created_by, created_date)\n" +
+                "values (?, ?, ?, ?, now())";
+        PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+        statement.setString(1, value.getFilename());
+        statement.setBinaryStream(2, value.getFile());
+        statement.setString(3, value.getNasabah().getCif());
+        statement.setString(4, value.getCreatedBy());
+
+        statement.executeUpdate();
+        ResultSet generatedKeys = statement.getGeneratedKeys();
+        if (generatedKeys.next())
+            value.setId(generatedKeys.getString("id"));
+        statement.close();
+        return value;
+    }
+
+    public Optional<NasabahImage> findImageById(String value) throws SQLException {
+        //language=PostgreSQL
+        String query = "select id, filename, file, nasabah_id, created_by, created_date\n" +
+                "from bank.nasabah_perorangan_image\n" +
+                "where id = ?";
+
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, value);
+        ResultSet resultSet = statement.executeQuery();
+        if (!resultSet.next()) {
+            statement.close();
+            resultSet.close();
+            return Optional.empty();
+        }
+
+        NasabahImage image = new NasabahImage();
+        image.setFilename(resultSet.getString("filename"));
+        image.setFile(resultSet.getBinaryStream("file"));
+        return Optional.of(image);
     }
 
     @Override

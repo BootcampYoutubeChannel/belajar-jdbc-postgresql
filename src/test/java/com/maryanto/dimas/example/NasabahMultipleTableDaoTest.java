@@ -4,15 +4,19 @@ import com.maryanto.dimas.example.config.DatasourceConfig;
 import com.maryanto.dimas.example.dao.bank.NasabahMultiTableDao;
 import com.maryanto.dimas.example.entity.bank.BadanUsaha;
 import com.maryanto.dimas.example.entity.bank.Nasabah;
+import com.maryanto.dimas.example.entity.bank.NasabahImage;
 import com.maryanto.dimas.example.entity.bank.Perorangan;
 import junit.framework.TestCase;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.io.*;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,6 +81,49 @@ public class NasabahMultipleTableDaoTest extends TestCase {
                 new Perorangan("001"),
                 new BadanUsaha("002"),
                 new BigDecimal("200000"));
+        connection.close();
+    }
+
+    @Test
+    public void testSimpanImage() throws SQLException {
+        DataSource dataSource = this.config.getDataSource();
+        Connection connection = dataSource.getConnection();
+        log.info("status connected");
+
+        NasabahMultiTableDao dao = new NasabahMultiTableDao(connection);
+        InputStream images = this.getClass().getResourceAsStream("/images/test.png");
+        NasabahImage nasabah = new NasabahImage(new Perorangan("001"),
+                "employee-image.png",
+                images,
+                "admin",
+                Timestamp.valueOf(LocalDateTime.now()));
+        dao.save(nasabah);
+        connection.close();
+    }
+
+    @Test
+    public void testReadImageImage() throws SQLException, IOException {
+        DataSource dataSource = this.config.getDataSource();
+        Connection connection = dataSource.getConnection();
+        log.info("status connected");
+
+        NasabahMultiTableDao dao = new NasabahMultiTableDao(connection);
+        Optional<NasabahImage> optional = dao.findImageById("e2d8b660-9e03-4552-bc58-2a3a9ec6bb1b");
+        assertTrue("find image id", optional.isPresent());
+        NasabahImage nasabah = optional.get();
+
+        File locationFile = new File(new StringBuilder(System.getProperty("user.home"))
+                .append(File.separator).append("Downloads")
+                .append(File.separator).append(nasabah.getFilename()).toString());
+        FileOutputStream outputStream = new FileOutputStream(locationFile);
+        InputStream inputStream = nasabah.getFile();
+        int bytesRead = -1;
+        while ((bytesRead = inputStream.read()) != -1) {
+            outputStream.write(bytesRead);
+        }
+        inputStream.close();
+        outputStream.close();
+
         connection.close();
     }
 }
