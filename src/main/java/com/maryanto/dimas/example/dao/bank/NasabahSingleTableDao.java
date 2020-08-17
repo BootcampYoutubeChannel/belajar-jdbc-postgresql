@@ -53,6 +53,15 @@ public class NasabahSingleTableDao implements CrudRepository<Nasabah, String> {
 
     @Override
     public Nasabah update(Nasabah value) throws SQLException {
+        String query = "call audit.nasabah_general_aud_trigger(?, ? ,?)";
+        CallableStatement statement = connection.prepareCall(query);
+        statement.setString(1, "UPDATE");
+        statement.setString(2, value.getLastUpdatedBy());
+        statement.setString(3, value.getCif());
+        statement.executeUpdate();
+
+// TODO update statement
+
         return null;
     }
 
